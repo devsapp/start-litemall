@@ -1,0 +1,77 @@
+Type: Application
+Name: start-litemall
+Provider:
+  - 阿里云
+Version: 0.0.1
+Description: 快速部署一个litemall电商应用系统到阿里云函数计算
+HomePage: https://github.com/devsapp/start-litemall
+Tags:
+  - 电商
+  - Java
+  - Springboot
+Category: Web框架
+Service:
+  函数计算:
+    Authorities:
+      - 管理员权限
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - serviceName
+    - functionName
+    - DbUrl
+    - DbUser
+    - DbPwd
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: cn-hangzhou
+      description: 创建应用所在的地区
+      enum:
+        - cn-beijing
+        - cn-hangzhou
+        - cn-shanghai
+        - cn-qingdao
+        - cn-zhangjiakou
+        - cn-huhehaote
+        - cn-shenzhen
+        - cn-chengdu
+        - cn-hongkong
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-northeast-1
+        - eu-central-1
+        - eu-west-1
+        - us-west-1
+        - us-east-1
+        - ap-south-1
+    serviceName:
+      title: 服务名
+      type: string
+      default: LiteMall
+      description: 应用所属的函数计算服务
+    functionName:
+      title: 函数名
+      type: string
+      default: litemall
+      description: 应用的函数名称
+    DbUrl:
+      title: mysql 数据库地址
+      type: string
+      default: ''
+      description: mysql 数据库地址, 临时可使用 jdbc:mysql://rm-bp19337q277h5izfvzo.mysql.rds.aliyuncs.com:3306/litemall?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true&verifyServerCertificate=false&useSSL=false 测试
+    DbUser:
+      title: mysql 数据库用户名
+      type: string
+      default: ''
+      description: mysql 数据库用户名, 临时可使用 litemall 测试
+    DbPwd:
+      title: mysql 数据库用户密码
+      type: string
+      default: ''
+      description: mysql 数据库用户密码, 临时可使用 litemall_123456 测试

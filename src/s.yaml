@@ -1,0 +1,104 @@
+edition: 1.0.0
+name: transform_fun
+access: "{{ access }}"
+vars:
+  region: cn-hangzhou
+  service:
+    name: "{{ serviceName }}"
+    description: litemall deploy on FC
+    internetAccess: true
+    # 如果您 springboot 项目中使用的 SPRING_DATASOURCE_DRUID_URL 是 vpc 内网地址
+    # 则需要配置 vpcConfig
+    # vpcConfig:
+    #   vpcId: xxx
+    #   securityGroupId: xxx
+    #   vswitchIds:
+    #     - vsw-xxx
+  dburl: "{{ DbUrl }}"
+  dbuser: "{{ DbUser }}"
+  dbpwd: "{{ DbPwd }}"
+
+services:
+  fc-LiteMall-init:
+    component: devsapp/fc
+    props:
+      region: ${vars.region}
+      service: ${vars.service}
+      function:
+        name: "{{ functionName }}"
+        handler: index.handler
+        timeout: 120
+        memorySize: 1536
+        runtime: custom
+        caPort: 80
+        instanceConcurrency: 30
+        codeUri: ./init
+        customRuntimeConfig:
+          command:
+            - nginx
+          args:
+            - 'g'
+            - "'daemon off;'"
+      triggers:
+        - name: httpTrigger
+          type: http
+          config:
+            authType: anonymous
+            methods:
+              - POST
+              - GET
+      customDomains:
+        - domainName: Auto
+          protocol: HTTP
+          routeConfigs:
+            - path: /*
+  fc-LiteMall:
+    component: devsapp/fc
+    actions: # 自定义执行逻辑
+      pre-deploy: # 在deploy之前运行
+        - run:  VUE_APP_BASE_API=${fc-LiteMall-init.output.url.custom_domain[0].domain}/admin npm run build:prod
+          path: ./litemall/litemall-admin # 命令行运行的路径
+        - run:  VUE_APP_BASE_API=${fc-LiteMall-init.output.url.custom_domain[0].domain}/wx npm run build:prod
+          path: ./litemall/litemall-vue # 命令行运行的路径
+        - run:  mvn install && mvn clean package
+          path: ./litemall # 命令行运行的路径
+    props:
+      region: ${vars.region}
+      service: ${vars.service}
+      function:
+        name: litemall
+        handler: index.handler
+        description: litemall deploy on FC
+        timeout: 120
+        memorySize: 3072
+        runtime: custom
+        caPort: 8080
+        environmentVariables:
+          SPRING_DATASOURCE_DRUID_URL: ${vars.dburl} 
+          SPRING_DATASOURCE_DRUID_USERNAME: ${vars.dbuser} 
+          SPRING_DATASOURCE_DRUID_PASSWORD: ${vars.dbpwd} 
+        instanceConcurrency: 30
+        codeUri: ./litemall/litemall-all
+        customRuntimeConfig:
+          command:
+            - java 
+          args:
+            - '-jar'
+            - 'target/litemall-all-0.1.0-exec.jar'
+      triggers:
+        - name: httpTrigger
+          type: http
+          config:
+            authType: anonymous
+            methods:
+              - POST
+              - GET
+              - PUT
+              - DELETE
+              - HEAD
+              - OPTIONS
+      customDomains:
+        - domainName: Auto
+          protocol: HTTP
+          routeConfigs:
+            - path: /*
