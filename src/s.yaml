@@ -56,12 +56,16 @@ services:
     component: devsapp/fc
     actions: # 自定义执行逻辑
       pre-deploy: # 在deploy之前运行
+        - run:  npm install
+          path: ./litemall/litemall-admin 
         - run:  VUE_APP_BASE_API=${fc-LiteMall-init.output.url.custom_domain[0].domain}/admin npm run build:prod
-          path: ./litemall/litemall-admin # 命令行运行的路径
+          path: ./litemall/litemall-admin 
+        - run:  npm install
+          path: ./litemall/litemall-vue 
         - run:  VUE_APP_BASE_API=${fc-LiteMall-init.output.url.custom_domain[0].domain}/wx npm run build:prod
-          path: ./litemall/litemall-vue # 命令行运行的路径
+          path: ./litemall/litemall-vue 
         - run:  mvn install && mvn clean package
-          path: ./litemall # 命令行运行的路径
+          path: ./litemall 
     props:
       region: ${vars.region}
       service: ${vars.service}
