@@ -37,11 +37,7 @@ vars: # 全局变量
   dbpwd: "{{ DbPwd }}"
 
 services:
-  fc-LiteMall-init:
-    # 业务名称/模块名称
-    # 如果只想针对 ai-project 下面的业务进行相关操作，可以在命令行中加上 ai-project，例如：
-    # 只对async-task进行构建：s ai-project build
-    # 如果不带有 ai-project ，而是直接执行 s build，工具则会对当前Yaml下，所有和 ai-project 平级的业务模块（如有其他平级的模块，例如下面注释的next-function），按照一定顺序进行 build 操作
+  fc-LiteMall-init: # 业务名称/模块名称
     component:  fc    # 组件名称，Serverless Devs 工具本身类似于一种游戏机，不具备具体的业务能力，组件类似于游戏卡，用户通过向游戏机中插入不同的游戏卡实现不同的功能，即通过使用不同的组件实现不同的具体业务能力
     props:
       region: ${vars.region}
