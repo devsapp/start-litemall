@@ -2,7 +2,7 @@ Type: Application
 Name: start-litemall
 Provider:
   - 阿里云
-Version: 0.0.9
+Version: 0.0.10
 Description: 快速部署一个litemall电商应用系统到阿里云函数计算
 HomePage: https://github.com/devsapp/start-litemall
 Tags:
