@@ -84,6 +84,8 @@ services:
           path: ./litemall/litemall-vue 
         - run:  mvn install && mvn clean package
           path: ./litemall 
+      post-deploy:
+        - component: fc ondemand put --qualifier LATEST --max 1
     props:
       region: ${vars.region}
       service: ${vars.service}
@@ -91,7 +93,7 @@ services:
         name: litemall
         handler: index.handler
         description: litemall deploy on FC
-        timeout: 120
+        timeout: 60
         memorySize: 3072
         runtime: custom
         caPort: 8080
@@ -99,7 +101,7 @@ services:
           SPRING_DATASOURCE_DRUID_URL: ${vars.dburl} 
           SPRING_DATASOURCE_DRUID_USERNAME: ${vars.dbuser} 
           SPRING_DATASOURCE_DRUID_PASSWORD: ${vars.dbpwd} 
-        instanceConcurrency: 30
+        instanceConcurrency: 100
         codeUri: ./litemall/litemall-all
         customRuntimeConfig:
           command:
@@ -107,6 +109,7 @@ services:
           args:
             - '-jar'
             - 'target/litemall-all-0.1.0-exec.jar'
+            - '-Ddruid.mysql.usePingMethod=false'
       triggers:
         - name: httpTrigger
           type: http
